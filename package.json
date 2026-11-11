@@ -1,0 +1,22 @@
+{
+  "name": "familybank-gateway",
+  "version": "1.0.0",
+  "description": "API gateway and services for the Family Bank real-time mobile banking prototype",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "seed": "node scripts/seed.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "axios": "^1.7.7",
+    "bcrypt": "^5.1.1",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.12.0",
+    "redis": "^4.7.0",
+    "ws": "^8.18.0"
+  }
+}
