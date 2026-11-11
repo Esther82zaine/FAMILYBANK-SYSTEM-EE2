@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Family Bank Real-Time Mobile Banking: Prototype</title>
+<style>
+:root{--bg:#f3f6f5;--card:#fff;--tx:#14231e;--mut:#66756f;--pri:#0b6e4f;--pri2:#e3f3ec;--bd:#dfe6e3;--bad:#c0392b;--warn:#b7791f;--ok:#1e8449;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0f1714;--card:#18231f;--tx:#e6efeb;--mut:#92a39b;--pri:#3ecf9a;--pri2:#173229;--bd:#283832;--bad:#ff7b6b;--warn:#e8b04a;--ok:#4cd68a}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0f1714;--card:#18231f;--tx:#e6efeb;--mut:#92a39b;--pri:#3ecf9a;--pri2:#173229;--bd:#283832;--bad:#ff7b6b;--warn:#e8b04a;--ok:#4cd68a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.top{max-width:1120px;margin:auto;padding:14px 12px 0}.top h1{font-size:18px;margin:0}.top p{margin:2px 0 0;color:var(--mut);font-size:13px}
+.wrap{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:14px;max-width:1120px;margin:auto;padding:12px}
+@media(max-width:840px){.wrap{grid-template-columns:minmax(0,1fr)}}
+.phone,.panel{background:var(--card);border:1px solid var(--bd);border-radius:18px;overflow:hidden}
+.phone{display:flex;flex-direction:column;min-height:640px;position:relative}
+.bar{background:var(--pri);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.phone .bar{color:#04150f}:root:not([data-theme="dark"]) .phone .bar{color:#fff}
+.scr{flex:1;padding:16px;overflow:auto}.mut{color:var(--mut)}.sm{font-size:12px}
+h2{font-size:18px;margin:0 0 6px}h3{font-size:14px;margin:16px 0 6px}
+label{display:block;font-size:12px;color:var(--mut);margin:10px 0 3px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
+.btn{width:100%;margin-top:14px;padding:12px;border:0;border-radius:12px;background:var(--pri);color:#fff;font-weight:600;font-size:15px;cursor:pointer}
+:root[data-theme="dark"] .btn{color:#04150f}@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn{color:#04150f}}
+.btn.alt{background:var(--pri2);color:var(--pri)}.lnk{background:none;border:0;color:inherit;cursor:pointer;text-decoration:underline;font:inherit}
+.err{color:var(--bad);font-size:13px;min-height:18px;margin-top:6px}.okm{color:var(--ok);font-size:13px}
+.card{background:var(--pri);color:#fff;border-radius:16px;padding:16px}:root[data-theme="dark"] .card{color:#04150f}@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .card{color:#04150f}}
+.card .b{font-size:26px;font-weight:700}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.tiles button{padding:10px 2px;border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);font-size:12px;cursor:pointer}
+.row{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid var(--bd)}
+.in{color:var(--ok);font-weight:600}.out{color:var(--bad);font-weight:600}.x{color:var(--mut);text-decoration:line-through}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--bd)}.nav button{padding:12px 0;background:none;border:0;color:var(--mut);cursor:pointer;font:inherit;font-size:13px}.nav .on{color:var(--pri);font-weight:700}
+.toast{position:absolute;left:12px;right:12px;top:56px;background:var(--tx);color:var(--bg);padding:10px 12px;border-radius:12px;font-size:13px;display:none;z-index:5}
+.pill{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--pri2);color:var(--pri);font-weight:600}
+.pill.w{background:#fdf0d5;color:#8a5a00}.pill.b{background:#fde3e0;color:#a32a1f}
+.rc{border:1px dashed var(--bd);border-radius:12px;padding:12px;margin:10px 0}
+.stk{background:var(--bg);border:2px solid var(--pri);border-radius:14px;padding:12px;margin-top:12px}
+.tabs{display:flex;gap:6px;padding:10px;border-bottom:1px solid var(--bd);flex-wrap:wrap}.tabs button{padding:7px 12px;border-radius:99px;border:1px solid var(--bd);background:none;color:var(--tx);cursor:pointer;font:inherit;font-size:13px}.tabs .on{background:var(--pri2);color:var(--pri);border-color:var(--pri)}
+.pb{padding:12px;max-height:760px;overflow:auto}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stats div{border:1px solid var(--bd);border-radius:12px;padding:8px 10px}.stats b{display:block;font-size:20px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:12.5px}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--bd);vertical-align:top}th{color:var(--mut);font-weight:600}
+.k{font-size:11px;font-weight:700;padding:1px 6px;border-radius:6px;background:var(--pri2);color:var(--pri);margin-right:6px}
+.sb{padding:3px 8px;border:1px solid var(--bd);border-radius:8px;background:none;color:var(--tx);cursor:pointer;font-size:12px;margin-right:4px}
+</style></head><body>
+<div class="top"><h1>Family Bank Real-Time Mobile Banking: working prototype</h1>
+<p>Customer app (left) and administrator console, event log and feature tests (right). Synthetic data only; M-Pesa and SMS are simulated.</p></div>
+<div class="wrap"><div class="phone" id="phone"></div><div class="panel"><div class="tabs" id="tabs"></div><div class="pb" id="pb"></div></div></div>
+<script>
+const $=s=>document.querySelector(s),LIMIT=150000,FRAUD=20000;
+const fmt=n=>'KES '+Number(n).toLocaleString('en-KE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hash=s=>{let h=5381;for(const c of 'salt'+s)h=((h<<5)+h+c.charCodeAt(0))|0;return 'h'+(h>>>0).toString(16)};
+const now=()=>new Date().toLocaleTimeString('en-GB'),DB={},subs={};
+function seed(){Object.assign(DB,{users:[{id:1,name:'Amina Wanjiku',phone:'0712345678',pin:hash('1234'),status:'ACTIVE'},{id:2,name:'Brian Otieno',phone:'0722111222',pin:hash('4321'),status:'ACTIVE'},{id:3,name:'Grace Mwende',phone:'0733555666',pin:hash('1111'),status:'ACTIVE'}],
+acc:[{id:1,uid:1,no:'1001234567',bal:48500},{id:2,uid:2,no:'1007654321',bal:12000},{id:3,uid:3,no:'1009988776',bal:90000}],
+tx:[],otp:null,fail:{},tk:[],audit:[],alerts:[],log:[],receipts:new Set(),pending:{},seq:1})}
+seed();
+const acc=uid=>DB.acc.find(a=>a.uid===uid),usr=id=>DB.users.find(u=>u.id===id);
+const on=(t,f)=>(subs[t]=subs[t]||[]).push(f);
+const log=(k,m)=>{DB.log.unshift({t:now(),k,m});DB.log.length=Math.min(DB.log.length,80)};
+const audit=(a,uid)=>DB.audit.unshift({t:now(),u:uid||'-',a,ip:'10.0.0.5',dev:'demo-device'});
+function publish(t,e){log('queue',t+' '+JSON.stringify(e));(subs[t]||[]).forEach(f=>f(e))}
+/* ---------- services ---------- */
+function issueOtp(u){const c=String(100000+Math.floor(Math.random()*900000));DB.otp={uid:u.id,h:hash(c),exp:Date.now()+300000,used:0};log('sms','to '+u.phone+': Your code is '+c);return c}
+function login1(phone,pin){const u=DB.users.find(x=>x.phone===phone);
+ if(!u||u.status==='LOCKED'){audit('LOGIN_DENIED',u&&u.id);return{ok:0,msg:'Access denied. The account is locked or does not exist.'}}
+ if(hash(pin)!==u.pin){const n=DB.fail[u.id]=(DB.fail[u.id]||0)+1;audit('LOGIN_FAILED',u.id);
+  if(n>=3){u.status='LOCKED';return{ok:0,msg:'Account locked after 3 wrong PINs. Contact support.'}}
+  return{ok:0,msg:'Incorrect PIN. '+(3-n)+' attempt(s) left.'}}
+ return{ok:1,code:issueOtp(u)}}
+function login2(code){const o=DB.otp;if(!o||o.used)return{ok:0,msg:'No active code. Tap resend.'};
+ if(Date.now()>o.exp)return{ok:0,msg:'Code expired. Tap resend.'};if(hash(code)!==o.h)return{ok:0,msg:'Wrong code.'};
+ o.used=1;DB.fail[o.uid]=0;audit('LOGIN',o.uid);return{ok:1,user:usr(o.uid)}}
+function move(uid,{type='TRANSFER',to=null,amt,ref,pin,desc=''}){
+ const u=usr(uid),from=acc(uid),dest=to?DB.acc.find(a=>a.no===to):null,snap=DB.acc.map(a=>a.bal);amt=+amt;
+ try{ /* one atomic unit: any error restores balances */
+  if(hash(pin)!==u.pin)throw'Wrong PIN';
+  if(!(amt>0))throw'Amount must be greater than zero';
+  if(to&&!dest)throw'Recipient account not found';
+  if(dest&&dest.id===from.id)throw'You cannot send to your own account';
+  if(DB.tx.some(t=>t.ref===ref))throw'Duplicate transaction: this reference was already processed';
+  if(from.bal<amt)throw'Insufficient funds';
+  const sent=DB.tx.filter(t=>t.from===from.id&&t.status==='SUCCESS').reduce((s,t)=>s+t.amt,0);
+  if(sent+amt>LIMIT)throw'Daily limit of '+fmt(LIMIT)+' exceeded';
+  from.bal-=amt;if(dest)dest.bal+=amt;
+  const t={id:DB.seq++,from:from.id,to:dest?dest.id:null,amt,type,status:'SUCCESS',ref,desc,at:new Date()};
+  DB.tx.unshift(t);audit(type,uid);
+  if(type==='TRANSFER'&&amt>=FRAUD)DB.alerts.unshift({t:now(),m:'Rule R1: transfer of '+fmt(amt)+' from '+from.no+' (ref '+ref+')'});
+  publish('transaction.completed',{uid,amt,ref,type:type.toLowerCase(),bal:from.bal,dir:'debited'});
+  if(dest)publish('transaction.completed',{uid:dest.uid,amt,ref,type:'transfer',bal:dest.bal,dir:'credited'});
+  return{ok:1,tx:t}
+ }catch(e){if(typeof e!=='string')throw e;
+  DB.acc.forEach((a,i)=>a.bal=snap[i]);
+  if(!e.startsWith('Duplicate')&&amt>0)DB.tx.unshift({id:DB.seq++,from:from.id,to:null,amt,type,status:'FAILED',ref:ref+'-F'+DB.seq,desc:desc+' ('+e+')',at:new Date()});
+  audit(type+'_REJECTED',uid);return{ok:0,msg:e}}}
+function stk(uid,phone,amt){amt=+amt;if(!(amt>=1))return{ok:0,msg:'Enter a valid amount'};
+ const id='ws_CO_'+DB.seq++;DB.pending[id]={uid,amt,phone};log('daraja','STK Push sent to '+phone+' for '+fmt(amt)+' ('+id+')');return{ok:1,id}}
+function callback(id,code,rcpt){const p=DB.pending[id];log('daraja','callback '+id+' ResultCode='+code+' receipt='+rcpt);
+ if(!p)return{ok:0,msg:'Unknown request'};const a=acc(p.uid);
+ if(code!==0){DB.tx.unshift({id:DB.seq++,from:null,to:a.id,amt:p.amt,type:'MPESA',status:'FAILED',ref:id,desc:'M-Pesa deposit cancelled',at:new Date()});return{ok:0,msg:'Payment cancelled or failed'}}
+ if(DB.receipts.has(rcpt))return{ok:0,msg:'Duplicate callback ignored: receipt '+rcpt+' already processed'};
+ DB.receipts.add(rcpt);a.bal+=p.amt;DB.tx.unshift({id:DB.seq++,from:null,to:a.id,amt:p.amt,type:'MPESA',status:'SUCCESS',ref:rcpt,desc:'M-Pesa deposit from '+p.phone,at:new Date()});
+ audit('MPESA_CREDIT',p.uid);publish('transaction.completed',{uid:p.uid,amt:p.amt,ref:rcpt,type:'deposit',bal:a.bal,dir:'credited'});return{ok:1}}
+function ticket(uid,subject,desc){const t={id:DB.seq++,uid,subject,desc,status:'OPEN',rating:0};DB.tk.unshift(t);publish('ticket.created',{id:t.id,uid});return t}
+function setTicket(id,st){const t=DB.tk.find(x=>x.id===id);t.status=st;publish('ticket.updated',{id,uid:t.uid,st})}
+on('transaction.completed',e=>{const u=usr(e.uid),m='KES '+e.amt+' '+e.dir+' ('+e.type+'). Balance '+fmt(e.bal);
+ log('websocket','live balance pushed to user '+e.uid+': '+fmt(e.bal));log('fcm',m);log('sms','to '+u.phone+': '+m);
+ if(S.user&&S.user.id===e.uid){if(S.scr==='home'||S.scr==='hist')phone();toast('Alert: '+m)}});
+on('ticket.created',e=>log('agent','real-time alert: new ticket #'+e.id+' in the support queue'));
+on('ticket.updated',e=>{log('websocket','ticket #'+e.id+' status → '+e.st+' (customer notified)');if(S.user&&S.user.id===e.uid){if(S.scr==='help')phone();toast('Ticket #'+e.id+' is now '+e.st)}});
+/* ---------- customer app ---------- */
+const S={user:null,scr:'login',err:'',phone:'0712345678',tab:'admin',ref:'',lastRef:'',last:null,stk:null,mp:null,q:'',biller:'KPLC Prepaid',tests:null};
+const newRef=()=>'TRF'+Date.now().toString(36).toUpperCase()+Math.floor(Math.random()*90+10);
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(tt);tt=setTimeout(()=>t.style.display='none',4500)}
+function go(s){S.scr=s;S.err='';S.last=null;S.stk=null;S.mp=null;S.q='';if(s==='send'){S.lastRef=S.ref||S.lastRef;S.ref=newRef()}phone()}
+const my=()=>acc(S.user.id),desc=t=>t.to===my().id&&t.type==='TRANSFER'?'Received from '+((DB.acc.find(a=>a.id===t.from)||{}).no):t.desc;
+const mine=()=>DB.tx.filter(t=>t.from===my().id||t.to===my().id);
+const trow=t=>{const i=t.to===my().id&&t.status!=='FAILED'||t.to===my().id;const c=t.status==='FAILED'?'x':i?'in':'out';
+ return `<div class="row"><div><b>${esc(desc(t))}</b><div class="mut sm">${t.at.toLocaleString('en-GB')} · ${esc(t.ref)} · ${t.status}</div></div><div class="${c}">${i?'+':'-'}${Number(t.amt).toLocaleString('en-KE')}</div></div>`};
+const rcpt=t=>`<div class="rc"><b class="okm">Successful</b><div class="sm">Reference ${esc(t.ref)}<br>${esc(desc(t))}<br>Amount ${fmt(t.amt)}<br>${t.at.toLocaleString('en-GB')}</div></div>`;
+function phone(){const u=S.user;let h;
+ if(!u)h=S.scr==='otp'?otpV():loginV();else h={home:homeV,send:sendV,mpesa:mpesaV,bills:billsV,hist:histV,help:helpV}[S.scr]();
+ $('#phone').innerHTML=`<div class="bar"><b>Family Bank</b>${u?'<button class="lnk" onclick="logout()">Sign out</button>':''}</div><div id="toast" class="toast"></div><div class="scr">${h}</div>${u?`<div class="nav">${[['home','Home'],['send','Pay'],['hist','History'],['help','Help']].map(([k,l])=>`<button class="${S.scr===k?'on':''}" onclick="go('${k}')">${l}</button>`).join('')}</div>`:''}`;panel()}
+const loginV=()=>`<h2>Welcome back</h2><p class="mut">Sign in with your phone number and PIN.</p><label>Phone number</label><input id="ph" value="${S.phone}" inputmode="numeric"><label>PIN</label><input id="pin" type="password" maxlength="4" inputmode="numeric" placeholder="4 digits"><div class="err" id="err">${S.err}</div><button class="btn" onclick="doLogin()">Continue</button><p class="mut sm">Demo customers: 0712345678 / 1234, 0722111222 / 4321, 0733555666 / 1111. Three wrong PINs lock the account.</p>`;
+function doLogin(){S.phone=$('#ph').value.trim();const r=login1(S.phone,$('#pin').value);if(!r.ok){S.err=r.msg;phone();return}S.scr='otp';S.err='';phone();toast('SMS: Your code is '+r.code)}
+const otpV=()=>`<h2>Enter the code</h2><p class="mut">A six-digit code was sent by SMS. It is valid for 5 minutes and works once.</p><label>One-time password</label><input id="otp" maxlength="6" inputmode="numeric"><div class="err" id="err">${S.err}</div><button class="btn" onclick="doOtp()">Verify</button><button class="btn alt" onclick="resend()">Resend code</button>`;
+function doOtp(){const r=login2($('#otp').value);if(!r.ok){$('#err').textContent=r.msg;panel();return}S.user=r.user;S.scr='home';phone()}
+function resend(){const c=issueOtp(usr(DB.otp.uid));toast('SMS: Your code is '+c);panel()}
+function logout(){audit('LOGOUT',S.user.id);S.user=null;S.scr='login';S.err='';phone()}
+const homeV=()=>`<div class="card"><div class="sm">${esc(S.user.name)} · Account ${my().no}</div><div class="b">${fmt(my().bal)}</div><div class="sm">Live balance</div></div><div class="tiles"><button onclick="go('send')">Send Money</button><button onclick="go('mpesa')">M-Pesa</button><button onclick="S.biller='KPLC Prepaid';go('bills')">Pay Bills</button><button onclick="S.biller='Airtime (Safaricom)';go('bills')">Airtime</button></div><h3>Latest transactions</h3>${mine().slice(0,4).map(trow).join('')||'<p class="mut">No transactions yet.</p>'}`;
+const others=()=>DB.acc.filter(a=>a.uid!==S.user.id);
+const sendV=()=>S.last?`<h2>Receipt</h2>${rcpt(S.last)}<button class="btn" onclick="go('send')">New transfer</button>`:`<h2>Send money</h2><p class="mut sm">From account ${my().no} · Daily limit ${fmt(LIMIT)}</p><label>Recipient account number</label><input id="to" list="al" inputmode="numeric" placeholder="e.g. ${others()[0].no}"><datalist id="al">${others().map(a=>`<option value="${a.no}">${esc(usr(a.uid).name)}</option>`).join('')}</datalist><label>Amount (KES)</label><input id="amt" inputmode="decimal"><label>Reference (idempotency key)</label><input id="ref" value="${S.ref}" readonly><label>Confirm with PIN</label><input id="pin" type="password" maxlength="4" inputmode="numeric"><div class="err" id="err"></div><button class="btn" onclick="doSend()">Send</button>${S.lastRef?`<button class="lnk sm" onclick="$('#ref').value=S.lastRef">Reuse the previous reference (tests the duplicate check)</button>`:''}`;
+function doSend(){const ref=$('#ref').value,r=move(S.user.id,{to:$('#to').value.trim(),amt:$('#amt').value,ref,pin:$('#pin').value,desc:'Transfer to '+$('#to').value.trim()});S.lastRef=ref;
+ if(!r.ok){$('#err').textContent=r.msg;S.ref=newRef();panel();return}S.last=r.tx;S.ref=newRef();phone()}
+const mpesaV=()=>{if(S.mp)return `<h2>Deposit successful</h2>${rcpt(S.mp.tx)}<button class="btn alt" onclick="replay()">Simulate a duplicate callback</button><div class="err" id="err"></div><button class="btn" onclick="go('mpesa')">Done</button>`;
+ if(S.stk)return `<h2>Waiting for M-Pesa…</h2><p class="mut">A prompt was sent to ${S.stk.phone}. The screen updates when Safaricom confirms.</p><div class="stk"><b>M-Pesa</b><div class="sm">Pay ${fmt(S.stk.amt)} to Family Bank?</div><label>M-Pesa PIN</label><input id="mpin" type="password" maxlength="4" placeholder="any 4 digits"><button class="btn" onclick="stkOk()">Confirm</button><button class="btn alt" onclick="stkNo()">Cancel</button></div>`;
+ return `<h2>M-Pesa deposit</h2><label>M-Pesa number</label><input id="mph" value="${S.user.phone}" inputmode="numeric"><label>Amount (KES)</label><input id="amt" inputmode="decimal"><div class="err" id="err">${S.err}</div><button class="btn" onclick="doStk()">Send STK Push</button>`};
+function doStk(){const r=stk(S.user.id,$('#mph').value,$('#amt').value);if(!r.ok){$('#err').textContent=r.msg;return}S.stk={id:r.id,phone:$('#mph').value,amt:+$('#amt').value};phone()}
+function stkOk(){const rc='R'+Math.random().toString(36).slice(2,10).toUpperCase(),id=S.stk.id;callback(id,0,rc);S.mp={id,rc,tx:DB.tx[0]};S.stk=null;phone()}
+function stkNo(){callback(S.stk.id,1032,'-');S.stk=null;S.err='Request cancelled by the customer.';phone()}
+function replay(){const r=callback(S.mp.id,0,S.mp.rc);$('#err').textContent=r.msg;panel()}
+const BILLERS=['KPLC Prepaid','Nairobi Water','DStv','School fees','Airtime (Safaricom)'];
+const billsV=()=>S.last?`<h2>Receipt</h2>${rcpt(S.last)}<button class="btn" onclick="go('bills')">Pay another bill</button>`:`<h2>Pay bills</h2><label>Biller</label><select id="bl">${BILLERS.map(b=>`<option ${b===S.biller?'selected':''}>${b}</option>`).join('')}</select><label>Account or meter number</label><input id="bn"><label>Amount (KES)</label><input id="amt" inputmode="decimal"><label>Confirm with PIN</label><input id="pin" type="password" maxlength="4" inputmode="numeric"><div class="err" id="err"></div><button class="btn" onclick="doBill()">Pay</button>`;
+function doBill(){const bl=$('#bl').value,bn=$('#bn').value.trim();if(!bn){$('#err').textContent='Enter the account or meter number';return}
+ const r=move(S.user.id,{type:'BILL',amt:$('#amt').value,ref:'BILL'+newRef(),pin:$('#pin').value,desc:'Paid '+bl+' ('+bn+')'});
+ if(!r.ok){$('#err').textContent=r.msg;panel();return}S.last=r.tx;phone()}
+const hl=()=>mine().filter(t=>(desc(t)+t.ref+t.status).toLowerCase().includes(S.q.toLowerCase())).map(trow).join('')||'<p class="mut">Nothing found.</p>';
+const histV=()=>`<h2>History</h2><input placeholder="Search description, reference or status" value="${esc(S.q)}" oninput="S.q=this.value;$('#hl').innerHTML=hl()"><div id="hl">${hl()}</div>`;
+const helpV=()=>`<h2>Support and complaints</h2><label>Subject</label><input id="sj"><label>Describe the problem</label><textarea id="ds" rows="3"></textarea><div class="err" id="err"></div><button class="btn" onclick="doTk()">Log complaint</button><h3>Your tickets</h3>${DB.tk.filter(t=>t.uid===S.user.id).map(t=>`<div class="row"><div><b>#${t.id} ${esc(t.subject)}</b><div class="mut sm">${esc(t.desc)}</div>${t.status==='RESOLVED'?(t.rating?`<div class="sm">Rated ${t.rating}/5</div>`:`<div class="sm">Rate: ${[1,2,3,4,5].map(n=>`<button class="sb" onclick="rate(${t.id},${n})">${n}</button>`).join('')}</div>`):''}</div><span class="pill ${t.status==='OPEN'?'w':''}">${t.status}</span></div>`).join('')||'<p class="mut">No tickets yet.</p>'}`;
+function doTk(){const s=$('#sj').value.trim(),d=$('#ds').value.trim();if(!s||!d){$('#err').textContent='Add a subject and a description';return}ticket(S.user.id,s,d);phone()}
+function rate(id,n){DB.tk.find(t=>t.id===id).rating=n;log('feedback','ticket #'+id+' rated '+n+'/5');phone()}
+/* ---------- admin, log, tests ---------- */
+function panel(){$('#tabs').innerHTML=[['admin','Administrator console'],['log','System log'],['tests','Feature tests']].map(([k,l])=>`<button class="${S.tab===k?'on':''}" onclick="S.tab='${k}';panel()">${l}</button>`).join('');
+ let h;if(S.tab==='admin'){const ok=DB.tx.filter(t=>t.status==='SUCCESS').length,bad=DB.tx.filter(t=>t.status==='FAILED').length;
+ h=`<div class="stats"><div><b>${ok}</b>Successful</div><div><b>${bad}</b>Failed</div><div><b>${DB.tk.filter(t=>t.status!=='RESOLVED').length}</b>Open tickets</div><div><b>${DB.alerts.length}</b>Fraud alerts</div></div>
+ <h3>Customers and accounts</h3><div class="tw"><table><tr><th>Name</th><th>Account</th><th>Balance</th><th>Status</th></tr>${DB.users.map(u=>`<tr><td>${u.name}</td><td>${acc(u.id).no}</td><td>${fmt(acc(u.id).bal)}</td><td>${u.status}${u.status==='LOCKED'?` <button class="sb" onclick="unlock(${u.id})">Unlock</button>`:''}</td></tr>`).join('')}</table></div>
+ <h3>Latest transactions</h3><div class="tw"><table><tr><th>Ref</th><th>Type</th><th>Amount</th><th>Status</th></tr>${DB.tx.slice(0,8).map(t=>`<tr><td>${esc(t.ref)}</td><td>${t.type}</td><td>${fmt(t.amt)}</td><td>${t.status}</td></tr>`).join('')||'<tr><td colspan="4" class="mut">No transactions yet.</td></tr>'}</table></div>
+ <h3>Fraud alerts (rule R1: single transfer of ${fmt(FRAUD)} or more)</h3>${DB.alerts.map(a=>`<div class="sm"><span class="pill b">ALERT</span> ${a.t} ${esc(a.m)}</div>`).join('')||'<p class="mut sm">None.</p>'}
+ <h3>Support tickets</h3>${DB.tk.map(t=>`<div class="row"><div><b>#${t.id} ${esc(t.subject)}</b> <span class="mut sm">${usr(t.uid).name}</span><div class="sm">${esc(t.desc)}</div></div><div>${t.status}<br>${['OPEN','IN PROGRESS','RESOLVED'].map(s=>`<button class="sb" onclick="setTicket(${t.id},'${s}');phone()">${s}</button>`).join('')}</div></div>`).join('')||'<p class="mut sm">No tickets.</p>'}
+ <h3>Audit log (metadata only)</h3><div class="tw"><table><tr><th>Time</th><th>User</th><th>Action</th><th>IP</th><th>Device</th></tr>${DB.audit.slice(0,8).map(a=>`<tr><td>${a.t}</td><td>${a.u}</td><td>${a.a}</td><td>${a.ip}</td><td>${a.dev}</td></tr>`).join('')}</table></div>`}
+ else if(S.tab==='log')h=`<p class="mut sm">Every completed transaction publishes an event; the notification service then pushes a WebSocket update, a push notification and an SMS.</p>`+(DB.log.map(l=>`<div class="sm"><span class="k">${l.k}</span>${l.t} ${esc(l.m)}</div>`).join('')||'<p class="mut">No events yet.</p>');
+ else h=`<button class="btn" style="margin:0 0 10px" onclick="runTests()">Run feature tests (TC01 to TC12)</button><p class="mut sm">Runs on a fresh copy of the data, then restores your session. Copy the results into Table 3.4.1.</p>`+(S.tests?`<b>${S.tests.filter(r=>r.ok).length} of ${S.tests.length} passed</b><div class="tw"><table><tr><th>ID</th><th>Feature</th><th>Expected</th><th>Actual</th><th>Status</th></tr>${S.tests.map(r=>`<tr><td>${r.id}</td><td>${r.n}</td><td>${r.e}</td><td>${esc(r.a)}</td><td class="${r.ok?'in':'out'}">${r.ok?'Pass':'Fail'}</td></tr>`).join('')}</table></div>`:'');
+ $('#pb').innerHTML=h}
+function unlock(id){usr(id).status='ACTIVE';DB.fail[id]=0;audit('ADMIN_UNLOCK',id);log('admin','account '+id+' unlocked');phone()}
+function runTests(){const keep=structuredClone(DB),R=[];seed();
+ const T=(id,n,e,f)=>{try{const[ok,a]=f();R.push({id,n,e,a,ok})}catch(x){R.push({id,n,e,a:String(x),ok:0})}},A=1,B=2,G=3;
+ const bal=u=>acc(u).bal,mv=(u,to,amt,ref,pin)=>move(u,{to,amt,ref,pin,desc:'t'});
+ T('TC01','Login with correct PIN and OTP','Access granted',()=>{const r=login1('0712345678','1234'),s=r.ok&&login2(r.code);return[!!s.ok,s.ok?'Access granted':'Denied']});
+ T('TC02','Wrong PIN three times','Account locked',()=>{login1('0722111222','0');login1('0722111222','0');login1('0722111222','0');return[usr(B).status==='LOCKED','Status: '+usr(B).status]});
+ usr(B).status='ACTIVE';
+ T('TC03','Expired OTP','Rejected; resend offered',()=>{login1('0712345678','1234');DB.otp.exp=0;const r=login2('000000');return[!r.ok&&/expired/.test(r.msg),r.msg]});
+ T('TC04','Transfer within balance','Balances updated; alert sent',()=>{const a=bal(A),g=bal(G),r=mv(A,'1009988776',1000,'T4','1234'),n=DB.log.some(l=>l.k==='sms'&&/credited/.test(l.m));return[r.ok&&bal(A)===a-1000&&bal(G)===g+1000&&n,'Sender '+bal(A)+', receiver '+bal(G)+', SMS '+(n?'sent':'missing')]});
+ T('TC05','Transfer above balance','Rejected; balances unchanged',()=>{const b=bal(B),r=mv(B,'1001234567',50000,'T5','4321');return[!r.ok&&bal(B)===b,r.msg+'; balance '+bal(B)]});
+ T('TC06','Same reference sent twice','Second rejected; one debit',()=>{const b=bal(G);mv(G,'1001234567',500,'T6','1111');const r=mv(G,'1001234567',500,'T6','1111');return[!r.ok&&bal(G)===b-500,r.msg]});
+ T('TC07','Two simultaneous transfers draining one account','Only one succeeds; balance not negative',()=>{const x=mv(B,'1009988776',8000,'T7a','4321'),y=mv(B,'1009988776',8000,'T7b','4321');return[x.ok!==y.ok&&bal(B)>=0,'First '+(x.ok?'ok':'rejected')+', second '+(y.ok?'ok':'rejected')+'; balance '+bal(B)]});
+ let id,b0;
+ T('TC08','M-Pesa success callback','Credited once; customer notified',()=>{b0=bal(A);id=stk(A,'0712345678',2000).id;const r=callback(id,0,'RTEST1');return[r.ok&&bal(A)===b0+2000,'Balance '+b0+' to '+bal(A)]});
+ T('TC09','M-Pesa callback repeated','No second credit',()=>{const r=callback(id,0,'RTEST1');return[!r.ok&&bal(A)===b0+2000,r.msg]});
+ const gw={n:0,check(t){if(!t)return 401;return++this.n>5?429:200}};
+ T('TC10','Request without a valid token','Rejected by gateway (401)',()=>{const c=gw.check(null);return[c===401,'HTTP '+c]});
+ T('TC11','Complaint submitted','Ticket visible to customer and agent',()=>{const t=ticket(A,'Failed transfer','Money left my account');return[DB.tk.some(x=>x.id===t.id&&x.uid===A)&&DB.log.some(l=>l.k==='agent'),'Ticket #'+t.id+' '+t.status+'; agent alerted']});
+ T('TC12','Rate limit exceeded','Further requests rejected (429)',()=>{let c;for(let i=0;i<6;i++)c=gw.check('tok');return[c===429,'HTTP '+c+' on request 6']});
+ Object.keys(DB).forEach(k=>delete DB[k]);Object.assign(DB,keep);S.tests=R;phone()}
+phone();
+</script></body></html>
